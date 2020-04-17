@@ -7,20 +7,22 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"strconv"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/xuperchain/xuperchain/core/pb"
 
-	"strconv"
-
 	"github.com/xuperchain/xuper-sdk-go/account"
 	"github.com/xuperchain/xuper-sdk-go/config"
 	"github.com/xuperchain/xuper-sdk-go/xchain"
+
+	"github.com/xuperdata/teesdk"
 )
 
 // WasmContract wasmContract structure
 type WasmContract struct {
 	ContractName string
+	tfc          *teesdk.TEEClient
 	xchain.Xchain
 }
 
@@ -28,7 +30,7 @@ type WasmContract struct {
 func InitWasmContract(account *account.Account, node, bcName, contractName, contractAccount string) *WasmContract {
 	commConfig := config.GetInstance()
 
-	return &WasmContract{
+	wc := &WasmContract{
 		ContractName: contractName,
 		Xchain: xchain.Xchain{
 			Cfg:             commConfig,
@@ -38,6 +40,17 @@ func InitWasmContract(account *account.Account, node, bcName, contractName, cont
 			ContractAccount: contractAccount,
 		},
 	}
+
+	if commConfig.TC.Enable {
+		wc.tfc = teesdk.NewTEEClient(
+			commConfig.TC.Uid,
+			commConfig.TC.Token,
+			commConfig.TC.Auditors[0].PublicDer,
+			commConfig.TC.Auditors[0].Sign,
+			commConfig.TC.Auditors[0].EnclaveInfoConfig,
+			commConfig.TC.TMSPort)
+	}
+	return wc
 }
 
 // DeployWasmContract deploy a wasm contract

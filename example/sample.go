@@ -33,7 +33,7 @@ func createAccount() (string, error) {
 func usingAccount() (*account.Account, error) {
 	// load your account from the private key and secure code you download from xuper.baidu.com
 	// Note that put the downloaded private key file at path "./keys/private.key"
-	acc, err := account.GetAccountFromFile("./keys/", "your secure code")
+	acc, err := account.GetAccountFromFile("./keys/", "123")
 	if err != nil {
 		return nil, fmt.Errorf("create account error: %v\n", err)
 	}
