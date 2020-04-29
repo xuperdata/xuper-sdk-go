@@ -223,41 +223,6 @@ func testInvokeWasmContract() {
 	log.Printf("......store finished......\n\n")
 }
 
-// check addition
-func testBinaryOp() {
-	log.Printf("start testBinaryOp.....\n")
-	// get user account
-	acc, err := account.GetAccountFromFile("./newkeys/", "123")
-	if err != nil {
-		log.Printf("get user account failed, err: %v", err)
-		os.Exit(-1)
-	}
-	fmt.Println(acc.Address)
-
-	contractAccount := "XC1111111111111111@xuper"
-	wasmContract := contract.InitWasmContract(acc, node, bcname, contractName, contractAccount)
-
-	// test addition
-	log.Println("start addition......")
-	addArgs := map[string]string{
-		"l": "duan",
-		"r": "bing",
-		"o": "duanbing",
-		"commitment":  "u5hlGDi+ZXfrMjSGRhIyxPwHyFN1NeJ8VIhibZ8I62A=",
-		"commitment2": "0VgPu8OS7SmXldb6DNSwhJLDgG4hrspMe6zPpKBxEaw=",
-	}
-	methodName := "add"
-	txid, err := wasmContract.InvokeWasmContract(methodName, addArgs)
-	if err != nil {
-		log.Printf("InvokeWasmContract PostWasmContract failed, err: %v", err)
-		os.Exit(-1)
-	}
-	log.Printf("txid: %v", txid)
-	log.Printf("check for addition: %v", check("duanbing", "37"))
-	log.Printf("finish testBinaryOp......\n\n")
-	return
-}
-
 func queryPlainValue(key string) string{
 	acc, err := usingAccount()
 	if err != nil {
@@ -372,7 +337,6 @@ func main() {
 	testTransfer()
 	testDeployWasmContract()
 	testInvokeWasmContract()
-	testBinaryOp()
 	testQueryTx()
 	testQueryWasmContract()
 	testGetBalance()
