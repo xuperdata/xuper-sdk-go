@@ -14,6 +14,7 @@ import (
 
 var language = 1
 var contractAcc = "XC1111111111111122@xuper"
+var user 		= "ZsPy7eELS55MXALUhAynUtjsxjeKFbwqy"
 var transactionId = ""
 
 // define blockchain node and blockchain name
@@ -24,6 +25,7 @@ var (
 )
 
 func testAccount() {
+	log.Printf("start testAccount......")
 	if _, err := os.Stat("./keys"); err != nil && os.IsNotExist(err) {
 	} else {
 		println("existed, pass")
@@ -64,6 +66,7 @@ func testAccount() {
 		panic(err)
 	}
 	fmt.Printf("getAccountFromFile: %v\n", acc)
+	log.Printf("finish testAccount......\n\n")
 	return
 }
 func usingAccount() (*account.Account, error) {
@@ -84,6 +87,7 @@ func testContractAccount() {
 	// Notice !!!
 	// parameters should be Mnemonics for your account and language
 	//account, err := account.RetrieveAccount(Mnemonics, language)
+	log.Printf("start testContractAccount......\n")
 	acc, err := usingAccount()
 	if err != nil {
 		fmt.Printf("retrieveAccount err: %v\n", err)
@@ -105,6 +109,7 @@ func testContractAccount() {
 		os.Exit(-1)
 	}
 	fmt.Println(txid)
+	log.Printf("finish testContractAccount......\n\n")
 	return
 }
 
@@ -115,6 +120,7 @@ func testTransfer() {
 	/*
 		acc, err := account.RetrieveAccount(Mnemonics, language)
 	*/
+	log.Printf("start testTransfer......\n")
 	acc, err := usingAccount()
 	if err != nil {
 		fmt.Printf("retrieveAccount err: %v\n", err)
@@ -137,6 +143,7 @@ func testTransfer() {
 		panic(err)
 	}
 	fmt.Printf("transfer tx: %v\n", txid)
+	log.Printf("finish testTransfer......\n\n")
 	return
 }
 
@@ -145,6 +152,7 @@ func testDeployWasmContract() {
 	// Notice !!!
 	// parameters should be Mnemonics for your account and language
 	//acc, err := account.RetrieveAccount(Mnemonics, language)
+	log.Printf("start testDeployWasmContract......\n")
 	acc, err := usingAccount()
 	if err != nil {
 		fmt.Printf("retrieveAccount err: %v\n", err)
@@ -172,6 +180,7 @@ func testDeployWasmContract() {
 		panic(err)
 	}
 	fmt.Printf("DeployWasmContract txid: %v\n", txid)
+	log.Printf("finish testDeployWasmContract......\n\n")
 	return
 }
 
@@ -180,6 +189,7 @@ func testInvokeWasmContract() {
 	// Notice !!!
 	// parameters should be Mnemonics for your account and language
 	//acc, err := account.RetrieveAccount(Mnemonics, language)
+	log.Printf("start testInvokeWasmContract.....\n")
 	acc, err := usingAccount()
 	if err != nil {
 		fmt.Printf("retrieveAccount err: %v\n", err)
@@ -196,12 +206,12 @@ func testInvokeWasmContract() {
 		"duan": "25",
 		"bing": "12",
 	}
-	args, err = wasmContract.EncryptWasmArgs(args);
+	encArgs, err := wasmContract.EncryptWasmArgs(args)
 	if err != nil {
 		panic(err)
 	}
 	methodName := "store"
-	txid, err := wasmContract.InvokeWasmContract(methodName, args)
+	txid, err := wasmContract.InvokeWasmContract(methodName, encArgs)
 	if err != nil {
 		log.Printf("InvokeWasmContract PostWasmContract failed, err: %v", err)
 		os.Exit(-1)
@@ -211,6 +221,21 @@ func testInvokeWasmContract() {
 	log.Printf("check for duan: %v", check("duan", args["duan"]))
 	log.Printf("check for bing: %v", check("bing", args["bing"]))
 	log.Printf("......store finished......\n\n")
+}
+
+// check addition
+func testBinaryOp() {
+	log.Printf("start testBinaryOp.....\n")
+	// get user account
+	acc, err := account.GetAccountFromFile("./newkeys/", "123")
+	if err != nil {
+		log.Printf("get user account failed, err: %v", err)
+		os.Exit(-1)
+	}
+	fmt.Println(acc.Address)
+
+	contractAccount := "XC1111111111111111@xuper"
+	wasmContract := contract.InitWasmContract(acc, node, bcname, contractName, contractAccount)
 
 	// test addition
 	log.Println("start addition......")
@@ -218,18 +243,18 @@ func testInvokeWasmContract() {
 		"l": "duan",
 		"r": "bing",
 		"o": "duanbing",
+		"commitment":  "u5hlGDi+ZXfrMjSGRhIyxPwHyFN1NeJ8VIhibZ8I62A=",
+		"commitment2": "0VgPu8OS7SmXldb6DNSwhJLDgG4hrspMe6zPpKBxEaw=",
 	}
-	methodName = "add"
-	txid, err = wasmContract.InvokeWasmContract(methodName, addArgs)
+	methodName := "add"
+	txid, err := wasmContract.InvokeWasmContract(methodName, addArgs)
 	if err != nil {
 		log.Printf("InvokeWasmContract PostWasmContract failed, err: %v", err)
 		os.Exit(-1)
 	}
 	log.Printf("txid: %v", txid)
-	transactionId = txid
-
 	log.Printf("check for addition: %v", check("duanbing", "37"))
-	log.Printf(" ......addition finished......\n\n")
+	log.Printf("finish testBinaryOp......\n\n")
 	return
 }
 
@@ -259,13 +284,13 @@ func queryPlainValue(key string) string{
 		log.Printf("QueryWasmContractPlain failed, err: %v", err)
 		os.Exit(-1)
 	}
-    // 返回解密的value
+	// 返回解密的value
 	return string(resPlain.GetResponse().GetResponse()[0])
 }
 
 func check(key, plain string) bool {
-    value := queryPlainValue(key)
-    return value == plain
+	value := queryPlainValue(key)
+	return value == plain
 }
 
 func testQueryWasmContract() {
@@ -273,6 +298,7 @@ func testQueryWasmContract() {
 	// Notice !!!
 	// parameters should be Mnemonics for your account and language
 	//acc, err := account.RetrieveAccount(Mnemonics, language)
+	log.Printf("start testQueryWasmContract......\n")
 	acc, err := usingAccount()
 	if err != nil {
 		fmt.Printf("retrieveAccount err: %v\n", err)
@@ -299,6 +325,7 @@ func testQueryWasmContract() {
 	for _, res := range preExeRPCRes.GetResponse().GetResponse() {
 		fmt.Printf("contract response: %s\n", string(res))
 	}
+	log.Printf("finish testQueryWasmContract......\n\n")
 	return
 }
 
@@ -307,6 +334,7 @@ func testGetBalance() {
 	// Notice !!!
 	// parameters should be Mnemonics for your account and language
 	//acc, err := account.RetrieveAccount(Mnemonics, language)
+	log.Printf("start testGetBalance......\n")
 	acc, err := usingAccount()
 	if err != nil {
 		fmt.Printf("retrieveAccount err: %v\n", err)
@@ -319,17 +347,20 @@ func testGetBalance() {
 	// get balance of the account
 	balance, err := trans.GetBalance()
 	log.Printf("balance %v, err %v", balance, err)
+	log.Printf("finish testGetBalance......\n\n")
 	return
 }
 
 func testQueryTx() {
 	// initialize a client to operate the transaction
+	log.Printf("start testQueryTx......\n")
 	time.Sleep(10 * time.Second)
 	trans := transfer.InitTrans(nil, node, bcname)
 
 	// query tx by txid
 	tx, err := trans.QueryTx(transactionId)
 	log.Printf("query tx %v, err %v", tx, err)
+	log.Printf("finish testQueryTx......\n\n")
 	return
 }
 
@@ -341,6 +372,7 @@ func main() {
 	testTransfer()
 	testDeployWasmContract()
 	testInvokeWasmContract()
+	testBinaryOp()
 	testQueryTx()
 	testQueryWasmContract()
 	testGetBalance()

@@ -3,6 +3,6 @@
     "method_name": "NewAccount",
     "args" : {
         "account_name": "1111111111111122",
-        "acl": "{\"pm\": {\"rule\": 1,\"acceptValue\": 1},\"aksWeight\": {\"YGV4Akkk82Tq51yxghf1yBnAS7GdA2GMH\": 1}}"
+        "acl": "{\"pm\": {\"rule\": 1,\"acceptValue\": 1},\"aksWeight\": {\"Rx3Cihj8SJgrYaPgPj1XpodfHxUQXUxKi\": 1}}"
     }
 }

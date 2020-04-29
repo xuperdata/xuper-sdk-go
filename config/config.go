@@ -26,7 +26,8 @@ type CommConfig struct {
 
 
 const confPath = "./conf"
-const confName = "sdk.yaml"
+//const confName = "sdk.yaml"
+const confName = "sdk.yaml.tee"
 
 var config *CommConfig
 
