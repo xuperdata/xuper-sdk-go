@@ -3,3 +3,7 @@
 
 # output files
 output/
+
+# onwer and user private keys
+keys
+newkeys
