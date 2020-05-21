@@ -141,7 +141,7 @@ func testTransfer() {
 
 	// transfer destination address, amount, fee and description
 	to := "UgdxaYwTzUjkvQnmeB3VgnGFdXfrsiwFv"
-	amount := "200"
+	amount := "500"
 	fee := "0"
 	desc := ""
 	// transfer

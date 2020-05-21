@@ -63,7 +63,8 @@ func (xc *Xchain) PreExecWithSelecUTXO() (*pb.PreExecWithSelectUTXOResponse, err
 		log.Printf("PreExecWithSelecUTXO Connect EndorseServiceHost failed, err: %v", err)
 	}
 	defer conn.Close()
-	ctx, cancel := context.WithTimeout(context.Background(), 15000*time.Millisecond)
+//	ctx, cancel := context.WithTimeout(context.Background(), 15000*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 50000*time.Millisecond)
 	defer cancel()
 	c := pb.NewXendorserClient(conn)
 	endorserResponse, err := c.EndorserCall(ctx, endorserRequest)

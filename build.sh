@@ -8,3 +8,4 @@ go build -o sample ./example/sample.go
 go build example/main_counter.go
 go build example/main_trust_counter.go
 go build example/main_data_auth.go
+go build example/main_paillier.go
