@@ -12,7 +12,7 @@ import (
 	"github.com/xuperchain/xuperchain/core/pb"
 	"github.com/xuperchain/xuperchain/core/crypto/sign"
 	"github.com/xuperchain/xuperchain/core/crypto/account"
-	"github.com/xuperdata/teesdk"
+	"github.com/xuperdata/teesdk/mesatee"
 )
 
 // EncryptArgs call the TEE App to encrypt the value of the args
@@ -27,7 +27,7 @@ func (c *WasmContract) EncryptArgs(svn uint32,args map[string]string) (string, e
 	pubHex := GetPubkeyHexFromJson(c.Account.PublicKey)
 	sigHex := SignEcdsaHex(c.Account.PrivateKey, sigContent)
 	// put pubkey and signature into request body
-	data, err := json.Marshal(teesdk.FuncCaller{
+	data, err := json.Marshal(mesatee.FuncCaller{
 		Method: "encrypt",
 		Args: string(plainJson),
 		Svn: svn,
@@ -35,7 +35,7 @@ func (c *WasmContract) EncryptArgs(svn uint32,args map[string]string) (string, e
 		PublicKey: pubHex,
 		Signature: sigHex,
 	})
-	newCipher, err := c.tfc.Submit("xchaintf", string(data))
+	newCipher, err := c.tc.Submit("xchaintf", string(data))
 	return string(newCipher), err
 }
 
@@ -51,7 +51,7 @@ func (c *WasmContract) DecryptArgs(svn uint32,args map[string]string) (string, e
 	pubHex := GetPubkeyHexFromJson(c.Account.PublicKey)
 	sigHex := SignEcdsaHex(c.Account.PrivateKey, sigContent)
 	// put pubkey and signature into request body
-	data, err := json.Marshal(teesdk.FuncCaller{
+	data, err := json.Marshal(mesatee.FuncCaller{
 		Method: "decrypt",
 		Args: string(plainJson),
 		Svn: svn,
@@ -59,7 +59,7 @@ func (c *WasmContract) DecryptArgs(svn uint32,args map[string]string) (string, e
 		PublicKey: pubHex,
 		Signature: sigHex,
 	})
-	newPlain, err := c.tfc.Submit("xchaintf", string(data))
+	newPlain, err := c.tc.Submit("xchaintf", string(data))
 	return string(newPlain), err
 }
 
@@ -73,7 +73,7 @@ func (c *WasmContract) DecryptResponse (responseCipher *pb.InvokeRPCResponse) (*
 
 	// 解密密文得到key和对应明文
 	commConfig := config.GetInstance()
-	decryptArgs, err := c.DecryptArgs(commConfig.TC.Svn, respArgs)
+	decryptArgs, err := c.DecryptArgs(commConfig.TFC.TEEConfig.Svn, respArgs)
 	if err != nil {
 		log.Println("DecryptArgs error,", err)
 		return nil, err
@@ -104,8 +104,8 @@ func (c *WasmContract) EncryptWasmArgs(args map[string]string) (map[string]strin
 	// preExe
 	commConfig := config.GetInstance()
 	// TODO fix bug
-	if commConfig.TC.Enable {
-		encryptedArgs, err := c.EncryptArgs(commConfig.TC.Svn, args)
+	if commConfig.TFC.TEEConfig.Enable {
+		encryptedArgs, err := c.EncryptArgs(commConfig.TFC.TEEConfig.Svn, args)
 		if err != nil {
 			log.Println("EncryptArgs error,", err)
 			return nil, err
@@ -138,15 +138,15 @@ func (c *WasmContract) GetAuthResp(cipher, user string) (map[string]string, erro
 	pubHex := GetPubkeyHexFromJson(c.Account.PublicKey)
 	sigHex := SignEcdsaHex(c.Account.PrivateKey, sigContent)
 	// put pubkey and signature into request body
-	data, err := json.Marshal(teesdk.FuncCaller{
+	data, err := json.Marshal(mesatee.FuncCaller{
 		Method: "authorize",
 		Args: string(plainJson),
-		Svn: commConfig.TC.Svn,
+		Svn: commConfig.TFC.TEEConfig.Svn,
 		Address: c.Account.Address,
 		PublicKey: pubHex,
 		Signature: sigHex,
 	})
-	authResponse, err := c.tfc.Submit("xchaintf", string(data))
+	authResponse, err := c.tc.Submit("xchaintf", string(data))
 	if err != nil {
 		log.Println("GetAuthResp error,", err)
 		return nil, err

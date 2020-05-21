@@ -7,14 +7,17 @@ complianceCheck:
   complianceCheckEndorseServiceAddr: WwLgfAatHyKx2mCJruRaML4oVf7Chzp42
 
 #可信环境的入口, optional
-teeConfig:
-  svn: 0
-  enable: on
-  tmsport: 8082
-  uid: "uid1"
-  token: "token1"
-  auditors:
-    -
-      publicder: /root/mesatee-core-standalone/release/services/auditors/godzilla/godzilla.public.der
-      sign: /root/mesatee-core-standalone/release/services/auditors/godzilla/godzilla.sign.sha256
-      enclaveinfoconfig: /root/mesatee-core-standalone/release/services/enclave_info.toml
+tfConfig:
+  teeConfig:
+    svn: 0
+    enable: on
+    tmsport: 8082
+    uid: "uid1"
+    token: "token1"
+    auditors:
+      -
+        publicder: /root/mesatee-core-standalone/release/services/auditors/godzilla/godzilla.public.der
+        sign: /root/mesatee-core-standalone/release/services/auditors/godzilla/godzilla.sign.sha256
+        enclaveinfoconfig: /root/mesatee-core-standalone/release/services/enclave_info.toml
+  paillierConfig:
+    enable: on

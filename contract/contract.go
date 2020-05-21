@@ -17,12 +17,14 @@ import (
 	"github.com/xuperchain/xuper-sdk-go/xchain"
 
 	"github.com/xuperdata/teesdk"
+	"github.com/xuperdata/teesdk/mesatee"
+	"github.com/xuperdata/teesdk/paillier"
 )
 
 // WasmContract wasmContract structure
 type WasmContract struct {
 	ContractName string
-	tfc          *teesdk.TEEClient
+	tc          teesdk.TrustClient
 	xchain.Xchain
 }
 
@@ -41,15 +43,19 @@ func InitWasmContract(account *account.Account, node, bcName, contractName, cont
 		},
 	}
 
-	if commConfig.TC.Enable {
-		wc.tfc = teesdk.NewTEEClient(
-			commConfig.TC.Uid,
-			commConfig.TC.Token,
-			commConfig.TC.Auditors[0].PublicDer,
-			commConfig.TC.Auditors[0].Sign,
-			commConfig.TC.Auditors[0].EnclaveInfoConfig,
-			commConfig.TC.TMSPort)
+	if commConfig.TFC.TEEConfig.Enable {
+		wc.tc = mesatee.NewTEEClient(
+			commConfig.TFC.TEEConfig.Uid,
+			commConfig.TFC.TEEConfig.Token,
+			commConfig.TFC.TEEConfig.Auditors[0].PublicDer,
+			commConfig.TFC.TEEConfig.Auditors[0].Sign,
+			commConfig.TFC.TEEConfig.Auditors[0].EnclaveInfoConfig,
+			commConfig.TFC.TEEConfig.TMSPort)
 	}
+	if commConfig.TFC.PaillierConfig.Enable {
+		wc.tc = paillier.NewPaillierClient()
+	}
+
 	return wc
 }
 
