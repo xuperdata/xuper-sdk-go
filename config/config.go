@@ -20,7 +20,7 @@ type ComplianceCheckConfig struct {
 type CommConfig struct {
 	EndorseServiceHost string                `yaml:"endorseServiceHost,omitempty"`
 	ComplianceCheck    ComplianceCheckConfig `yaml:"complianceCheck,omitempty"`
-	TFC				   teesdk.TFConfig		 `yaml:"tfConfig,omitempty"`
+	TFC		   teesdk.TFConfig	 `yaml:"tfConfig,omitempty"`
 	Crypto             string                `yaml:"crypto,omitempty"`
 }
 
