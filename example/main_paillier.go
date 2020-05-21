@@ -209,17 +209,17 @@ func testEnc() {
 	----------------------------------------------------------
      dataid | owner | pubkey     | content  | user  | commitment
     ----------------------------------------------------------
-        1   | owner | pubkeyOwn  | cipher1  | owner |				// store cipher1
+        1   | owner | pubkeyOwn  | cipher1  | owner |			// store cipher1
     ----------------------------------------------------------
-        2   | owner | pubkeyOwn  | cipher2  | owner |				// store cipher2
+        2   | owner | pubkeyOwn  | cipher2  | owner |			// store cipher2
     ----------------------------------------------------------
-        1   | owner | pubkeyOwn  | cipher1  | user  | commitment1   // authorize cipher1 to user
+        1   | owner | pubkeyOwn  | cipher1  | user  | commitment1       // authorize cipher1 to user
     ----------------------------------------------------------
-        2   | owner | pubkeyOwn  | cipher2  | user  | commitment2   // authorize cipher2 to user
+        2   | owner | pubkeyOwn  | cipher2  | user  | commitment2       // authorize cipher2 to user
     ----------------------------------------------------------
-        3   | owner | pubkeyOwn  | cipher3  | user  | 				// usr computes data1+data2
+        3   | owner | pubkeyOwn  | cipher3  | user  | 			// usr computes data1+data2
     ----------------------------------------------------------
-        4   | owner | pubkeyOwn  | cipher4  | user  |				// user computes scalar*data1
+        4   | owner | pubkeyOwn  | cipher4  | user  |			// user computes scalar*data1
     ----------------------------------------------------------
 */
 
